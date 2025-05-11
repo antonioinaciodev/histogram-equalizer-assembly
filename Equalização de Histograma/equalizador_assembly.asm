@@ -11,7 +11,7 @@ histogram_eq:		.space 1024				# 256 * 4 = espaço da memória para 256 contadore
 int_buffer:			.space 4				# 3 bytes + '\0'
 file:				.asciz "Imagem_Y.bin"
 output_file:    	.asciz "histograma_equalizado_assembly.txt"
-output_bin_file:	.asciz "Imagem_Y_eq.bin"
+output_bin_file:	.asciz "Imagem_Y_eq_assembly.bin"
 str_error:			.asciz "open file error\n"
 str_success:		.asciz "open file success\n"
 str_pixel:      	.asciz "Pixel "

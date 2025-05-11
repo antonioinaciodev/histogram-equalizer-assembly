@@ -3,44 +3,63 @@ from collections import Counter
 import numpy as np
 import sys
 
-# Abre a imagem JPEG e converte para escala de cinza (L)
-try:
-    img = Image.open("Imagem.jpg").convert("L")
-    print("open file success")
-except FileNotFoundError:
-    print("open file error")
-    sys.exit()
 
-img.save("Imagem_PB.jpg")
+def get_img(path):
+    try:
+        img = Image.open(path).convert("L")
+        print("open file success")
+        return img
+    except FileNotFoundError:
+        print("open file error")
+        sys.exit()
 
-# Converte a imagem para um array numpy de uint8
-array_bytes_Y = np.array(img, dtype=np.uint8)
 
-# Salva o array como bytes puros em um arquivo .bin
-array_bytes_Y.tofile("Imagem_Y_alto_nivel.bin")
+def histograma(img):
+    array_bytes_image = np.array(img, dtype=np.uint8)
+    array_bytes_image.tofile("Imagem_Y.bin")
+    return Counter(array_bytes_image.flatten())
 
-# Calcula o histograma com Counter
-histograma = Counter(array_bytes_Y.flatten())
 
-# Frequência acumulada
-frequencia_acumulada = 0
-lut = np.zeros(256, dtype=np.uint8)
-total_pixels = array_bytes_Y.size  # automático agora
+def equalizer(Histograma):
+    equalizado = Counter()
 
-for i in range(256):
-    frequencia_acumulada += histograma.get(i, 0)
-    valor_eq = (frequencia_acumulada * 255) / total_pixels
-    lut[i] = int(round(valor_eq))
-
-# Aplica a LUT (lookup table) para gerar a imagem equalizada
-equalizada_array = np.take(lut, array_bytes_Y)
-
-# Salva a imagem equalizada
-Image.fromarray(equalizada_array).save("Imagem_PB_equalizada_altonivel.jpg")
-
-# Salva o histograma equalizado em um arquivo .txt
-with open("histograma_equalizado.txt", "w") as f:
     for i in range(256):
-        f.write(f"Pixel {i} - Ocorrencia {lut[i]}\n")
+        fac = 0
+        for j in range(i):
+            fac += Histograma.get(j, 0)
+        ocorrencia_eq = (fac * 255) / 21120
+        equalizado[i] = int(ocorrencia_eq)
+    return equalizado
 
-print("Equalização concluída com sucesso.")
+
+def write_txt(Histograma):
+    with open("histograma_equalizado_python.txt", "w") as file:
+
+        for i in range(256):
+            fac = 0
+            for j in range(i):
+                fac += Histograma.get(j, 0)
+            ocorrencia_eq = (fac * 255) / 21120
+            print(f"Pixel {i} - Ocorrencia {int(ocorrencia_eq)}")
+            file.write(f"Pixel {i} - Ocorrencia {int(ocorrencia_eq)}\n")
+
+
+def write_bin(img, equalizado):
+    array = np.array(img, dtype=np.uint8)
+    equalized_array = np.vectorize(
+        lambda x: equalizado[x])(array).astype(np.uint8)
+    equalized_array.tofile("Imagem_Y_eq_python.bin")
+
+
+def main():
+    path = "imagens/Imagem.jpg"
+
+    Imagem = get_img(path)
+    Histograma = histograma(Imagem)
+    write_txt(Histograma)
+    equalizado = equalizer(Histograma)
+    write_bin(Imagem, equalizado)
+
+
+if __name__ == "__main__":
+    main()
