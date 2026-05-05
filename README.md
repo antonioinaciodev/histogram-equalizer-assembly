@@ -22,8 +22,7 @@ O fluxo de dados passa por três etapas principais de execução:
     ```bash
     git clone https://github.com/antonioinaciodev/histogram-equalizer-assembly.git
     cd histogram-equalizer-assembly
-    
-```
+    ```
 
 2.  **Pré-processamento (Python):** 
     Execute `extract_channels.py` para ler `images/raw_image.jpg`, dividi-la nos canais R, G, B e Y, e exportar os dados brutos para a pasta `channels/`.
