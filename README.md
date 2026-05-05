@@ -1,52 +1,48 @@
-## RISC-V Image Equalizer
+# 📊 RISC-V Image Equalizer
 
-## 📌 About the Project
-This repository contains a hardware-software co-design project developed for a Computer Architecture course. The core objective is to perform Digital Image Histogram Equalization directly at the bare-metal level using RISC-V Assembly, showcasing low-level memory manipulation, data processing, and optimization.
+## 📌 Sobre o Projeto
+Este repositório contém um projeto de co-design de hardware e software desenvolvido para a disciplina de Arquitetura de Computadores (Ciência da Computação - UFPI) O objetivo central é realizar a Equalização de Histograma de Imagens Digitais diretamente em nível *bare-metal* utilizando **Assembly RISC-V**, demonstrando manipulação de memória em baixo nível, processamento de dados e otimização.
 
-To support the Assembly algorithm, a robust Python ecosystem acts as the pre- and post-processing pipeline. It handles high-level tasks such as splitting images into separate color channels (Red, Green, Blue, and Luminance/Grayscale Y), converting them to raw binary files, and reconstructing the processed bytes back into viewable digital images.
+Para dar suporte ao algoritmo em Assembly, um ecossistema robusto em **Python** atua como *pipeline* de pré e pós-processamento[cite: 13]. Ele lida com tarefas de alto nível, como a separação de imagens em canais de cores distintos (Vermelho, Verde, Azul e Luminância/Escala de Cinza Y), a conversão desses canais para arquivos binários brutos e a reconstrução dos bytes processados de volta em imagens digitais visíveis.
 
-## 🏗️ Project Architecture
-The repository was strictly refactored to follow Clean Code principles and a modular architecture:
+## 🏗️ Arquitetura do Projeto
+O repositório foi rigorosamente refatorado para seguir os princípios de arquitetura modular:
 
-src/: Contains the core RISC-V Assembly algorithms (.asm) for each specific channel.
+*   **`src/`**: Contém os algoritmos centrais em Assembly RISC-V (`.asm`) para cada canal específico.
+*   **`scripts/`**: Contém o ecossistema generalizado em Python.
+*   **`channels/`**: Armazena as matrizes binárias brutas de entrada (`.bin`) e saída (`_eq_asm.bin`).
+*   **`images/`**: Abriga a imagem bruta inicial e as saídas reconstruídas finais (Escala de Cinza e RGB).
+*   **`reports/`**: Salva os histogramas gerados em `.txt` para validação estatística.
+*   **`docs/`**: Contém os relatórios acadêmicos teóricos.
 
-scripts/: Contains the generalized Python ecosystem.
+## ⚙️ O Pipeline (Como Executar)
+O fluxo de dados passa por três etapas principais de execução:
 
-channels/: Stores the raw input (.bin) and output (_eq_asm.bin) binary matrices.
+1.  **Clone o repositório:**
+    ```bash
+    git clone https://github.com/antonioinaciodev/histogram-equalizer-assembly.git
+    cd histogram-equalizer-assembly
+    
+```
 
-images/: Houses the initial raw image and the final reconstructed outputs (Grayscale and RGB).
+2.  **Pré-processamento (Python):** 
+    Execute `extract_channels.py` para ler `images/raw_image.jpg`, dividi-la nos canais R, G, B e Y, e exportar os dados brutos para a pasta `channels/`.
 
-reports/: Saves the generated .txt histograms for statistical validation.
+3.  **Processamento (Assembly RISC-V):** 
+    Abra os arquivos `src/eq_channel_*.asm` em um simulador RISC-V (como RARS ou Venus). O código em Assembly lerá os binários de entrada, calculará a Função de Distribuição Acumulada (CDF), aplicará a matemática de equalização e gerará os binários processados e os relatórios de texto do histograma.
 
-docs/: Contains the theoretical academic reports.
+4.  **Pós-processamento (Python):** 
+    Execute `reconstruct_images.py` para ingerir os arquivos `.bin` equalizados e reconstruí-los em `equalized_grayscale.jpg` e `equalized_color.jpg` de volta no diretório `images/`.
+    *(Opcional: Execute `python_equalizer.py` para gerar os dados de "ground-truth" em alto nível para benchmarking)*.
 
-## ⚙️ The Pipeline (How to Run)
-The data flows through three main execution steps:
+## 🚀 Funcionalidades
+*   **Processamento Completo em Baixo Nível:** Cálculo de histograma e equalização de pixels implementados inteiramente em Assembly RISC-V.
+*   **Suporte Multicanal:** Capacidades de processamento independente para os canais R, G, B e Y.
+*   **Pipeline Automatizado:** Scripts em Python capazes de processar em lote matrizes multidimensionais (tensores) transformando-os em binários legíveis em baixo nível.
+*   **Reconstrutor RGB:** Reagrupa as matrizes Vermelha, Verde e Azul equalizadas individualmente em uma imagem colorida unificada.
 
-Pre-processing (Python):
-Run extract_channels.py to read images/raw_image.jpg, split it into R, G, B, and Y channels, and export the raw data into channels/.
-
-Processing (RISC-V Assembly):
-Open the src/eq_channel_*.asm files in a RISC-V simulator (like RARS or Venus). The Assembly code will read the input binaries, compute the Cumulative Distribution Function (CDF), apply the equalization math, and output the processed binaries and histogram text reports.
-
-Post-processing (Python):
-Run reconstruct_images.py to ingest the equalized .bin files and reconstruct them into equalized_grayscale.jpg and equalized_color.jpg back in the images/ directory.
-(Optional: Run python_equalizer.py to generate the high-level ground-truth data for benchmarking).
-
-## 🚀 Features
-Full Low-Level Processing: Histogram calculation and pixel equalization implemented entirely in RISC-V Assembly.
-
-Multi-Channel Support: Independent processing capabilities for R, G, B, and Y channels.
-
-Automated Pipeline: Python scripts capable of batch-processing multi-dimensional arrays (tensors) into low-level readable binaries.
-
-RGB Reconstructor: Re-stacks the individually equalized Red, Green, and Blue matrices into a unified color image.
-
-## 🛠️ Tech Stack
-RISC-V Assembly: Core equalization algorithm and data structures.
-
-Python: Main scripting and pipeline automation.
-
-NumPy: Multi-dimensional array operations and binary manipulation.
-
-Pillow (PIL): High-level image decoding and encoding.
+## 🛠️ Tecnologias Utilizadas
+*   **Assembly RISC-V:** Algoritmo central de equalização e estruturas de dados.
+*   **Python:** Scripting principal e automação do *pipeline*.
+*   **NumPy:** Operações de array multidimensional e manipulação de binários.
+*   **Pillow (PIL):** Decodificação e codificação de imagens em alto nível.
