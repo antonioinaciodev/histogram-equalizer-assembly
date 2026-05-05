@@ -1,4 +1,5 @@
 RISC-V Image Equalizer
+
 📌 About the Project
 This repository contains a hardware-software co-design project developed for a Computer Architecture course. The core objective is to perform Digital Image Histogram Equalization directly at the bare-metal level using RISC-V Assembly, showcasing low-level memory manipulation, data processing, and optimization.
 
